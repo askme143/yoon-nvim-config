@@ -7,7 +7,7 @@ return {
     {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
-        config = function () 
+        config = function()
             local configs = require("nvim-treesitter.configs")
             configs.setup({
                 ensure_installed = { "c", "lua", "javascript", "html", "ocaml", "python", "typescript" },
@@ -18,18 +18,20 @@ return {
         end
     },
     {
-        'nvim-telescope/telescope.nvim', tag = '0.1.0',
+        'nvim-telescope/telescope.nvim',
+        tag = '0.1.0',
         dependencies = {
             { 'nvim-lua/plenary.nvim', lazy = false }
         }
     },
     {
         'nvim-telescope/telescope-fzf-native.nvim',
-        build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+        build =
+        'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
     },
     {
         "lukas-reineke/indent-blankline.nvim",
-        config = function ()
+        config = function()
             require("indent_blankline").setup {
                 -- for example, context is off by default, use this to turn it on
                 show_current_context = true,
@@ -38,7 +40,12 @@ return {
         end
     },
     {
+        'windwp/nvim-autopairs',
+        config = function() require("nvim-autopairs").setup {} end
+    },
+    {
         "simrat39/inlay-hints.nvim",
+        lazy = false,
         config = function()
             require('inlay-hints').setup()
         end
@@ -48,32 +55,31 @@ return {
         branch = 'v2.x',
         dependencies = {
             -- LSP Support
-            {'neovim/nvim-lspconfig'},             -- Required
-            {'williamboman/mason.nvim'},           -- Optional
-            {'williamboman/mason-lspconfig.nvim'}, -- Optional
+            { 'neovim/nvim-lspconfig' },             -- Required
+            { 'williamboman/mason.nvim' },           -- Optional
+            { 'williamboman/mason-lspconfig.nvim' }, -- Optional
 
             -- Autocompletion
-            {'hrsh7th/nvim-cmp'},     -- Required
-            {'hrsh7th/cmp-nvim-lsp'}, -- Required
-            {'L3MON4D3/LuaSnip'},     -- Required
+            { 'hrsh7th/nvim-cmp' },     -- Required
+            { 'hrsh7th/cmp-nvim-lsp' }, -- Required
+            { 'L3MON4D3/LuaSnip' },     -- Required
         },
-        config = function ()
+        config = function()
             -- auto completion use enter
             local cmp = require('cmp')
-            cmp.setup(
-                {
-                    mapping = {
-                        ['<CR>'] = cmp.mapping.confirm({select=true}),
-                        ['<C-Space>'] = cmp.mapping.complete(),
-                    }
+            cmp.setup({
+                mapping = {
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                    ['<C-Space>'] = cmp.mapping.complete(),
                 }
-            )
+            })
 
             -- lsp
             local lsp = require('lsp-zero').preset({})
 
             lsp.on_attach(function(client, bufnr)
-                lsp.default_keymaps({buffer = bufnr})
+                lsp.default_keymaps({ buffer = bufnr })
+                lsp.buffer_autoformat()
             end)
 
             lsp.format_on_save({
@@ -82,6 +88,34 @@ return {
                     ['ocamllsp'] = { 'ocaml', 'ocaml.menhir', 'ocaml.interface', 'ocaml.ocamllex', 'reason', 'dune' },
                     ['rust_analyzer'] = { 'rust' },
                     ['html'] = { 'html' },
+                }
+            })
+
+            -- LSP Servers without MASON
+            lsp.setup_servers({ 'ocamllsp' })
+
+            -- inlay hint
+            local ih = require('inlay-hints')
+            local lspconfig = require('lspconfig')
+            ih.setup()
+            lspconfig.lua_ls.setup({
+                on_attach = function(client, bufnr)
+                    ih.on_attach(client, bufnr)
+                end,
+                settings = {
+                    Lua = {
+                        hint = { enable = true, }
+                    }
+                }
+            })
+            lspconfig.ocamllsp.setup({
+                on_attach = function(client, bufnr)
+                    ih.on_attach(client, bufnr)
+                end,
+                settings = {
+                    ocaml = {
+                        hint = { enable = true, }
+                    }
                 }
             })
 

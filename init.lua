@@ -9,6 +9,7 @@ set.smarttab = true
 set.shiftwidth = 4
 
 vim.cmd([[
+autocmd BufEnter *.ml :setlocal tabstop=2 shiftwidth=2 softtabstop=4
 autocmd BufEnter *.js :setlocal tabstop=2 shiftwidth=2 softtabstop=4
 autocmd BufEnter *.ts :setlocal tabstop=2 shiftwidth=2 softtabstop=4
 autocmd BufEnter *.jsx :setlocal tabstop=2 shiftwidth=2 softtabstop=4
@@ -20,8 +21,8 @@ autocmd BufEnter *.dart :setlocal tabstop=2 shiftwidth=2 softtabstop=4
 
 -- UI config
 set.number = true
-set.relativenumber = true	-- set relative line numbers
-set.wildmenu = true		-- show vim command line autocomplete candidates
+set.relativenumber = true -- set relative line numbers
+set.wildmenu = true       -- show vim command line autocomplete candidates
 
 
 -- Key config
@@ -58,19 +59,17 @@ vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>tm", vim.cmd.te)
 
--- auto completion
-
 -- lazy plugin manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -80,4 +79,3 @@ require("lazy").setup(plugins)
 -- after plugins
 require("after.color")
 require("after.telescope")
-
